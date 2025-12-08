@@ -110,12 +110,12 @@ async function callPriceAPI(formData) {
         // 解析JSON响应
         const data = await response.json();
         
-        // 检查HTTP状态码
+        // Проверка HTTP статус-кода
         if (!response.ok) {
-            // 服务器返回错误
+            // Сервер вернул ошибку
             return {
                 success: false,
-                error: data.error || '服务器错误',
+                error: data.error || 'Ошибка сервера',
                 details: data.details || []
             };
         }
@@ -123,13 +123,13 @@ async function callPriceAPI(formData) {
         return data;
         
     } catch (error) {
-        // 处理网络错误
+        // Обработка сетевых ошибок
         if (error.name === 'AbortError') {
-            throw new Error('请求超时：计算时间超过5秒，请尝试减少二叉树步数');
+            throw new Error('Тайм-аут запроса: расчет занял более 5 секунд, попробуйте уменьшить количество шагов');
         } else if (error instanceof TypeError && error.message.includes('fetch')) {
-            throw new Error('网络错误：无法连接到服务器，请确保服务器正在运行');
+            throw new Error('Сетевая ошибка: не удается подключиться к серверу, убедитесь, что сервер запущен');
         } else {
-            throw new Error('请求失败：' + error.message);
+            throw new Error('Ошибка запроса: ' + error.message);
         }
     }
 }
@@ -178,12 +178,12 @@ async function callVisualizationAPI(formData) {
         // 解析JSON响应
         const data = await response.json();
         
-        // 检查HTTP状态码
+        // Проверка HTTP статус-кода
         if (!response.ok) {
-            // 服务器返回错误
+            // Сервер вернул ошибку
             return {
                 success: false,
-                error: data.error || '可视化数据生成失败',
+                error: data.error || 'Не удалось создать данные визуализации',
                 details: data.details || []
             };
         }
@@ -191,13 +191,13 @@ async function callVisualizationAPI(formData) {
         return data;
         
     } catch (error) {
-        // 处理网络错误
+        // Обработка сетевых ошибок
         if (error.name === 'AbortError') {
-            throw new Error('可视化请求超时：计算时间超过10秒');
+            throw new Error('Тайм-аут визуализации: расчет занял более 10 секунд');
         } else if (error instanceof TypeError && error.message.includes('fetch')) {
-            throw new Error('网络错误：无法连接到服务器');
+            throw new Error('Сетевая ошибка: не удается подключиться к серверу');
         } else {
-            throw new Error('可视化请求失败：' + error.message);
+            throw new Error('Ошибка запроса визуализации: ' + error.message);
         }
     }
 }
@@ -238,7 +238,7 @@ async function handleFormSubmit(event) {
         // 显示结果
         displayResults(priceResult);
         
-        // 调用可视化API
+        // Вызов API визуализации
         try {
             const visualizationResult = await callVisualizationAPI(formData);
             
@@ -246,12 +246,12 @@ async function handleFormSubmit(event) {
                 displayVisualization(visualizationResult.visualization_data);
             }
         } catch (vizError) {
-            console.warn('可视化数据生成失败:', vizError);
-            // 可视化失败不影响主要结果显示
+            console.warn('Не удалось создать данные визуализации:', vizError);
+            // Ошибка визуализации не влияет на отображение основных результатов
         }
         
     } catch (error) {
-        showErrors([error.message || '发生未知错误']);
+        showErrors([error.message || 'Произошла неизвестная ошибка']);
     } finally {
         setLoadingState(false);
     }
@@ -284,45 +284,45 @@ function validateForm() {
     const model = modelSelect.value;
     const binomialSteps = parseInt(document.getElementById('binomial_steps').value);
     
-    // 验证标的资产价格
+    // Проверка цены базового актива
     if (isNaN(spotPrice) || spotPrice <= 0) {
-        errors.push('标的资产价格必须为正数');
+        errors.push('Цена базового актива должна быть положительной');
     }
     
-    // 验证执行价格
+    // Проверка цены исполнения
     if (isNaN(strikePrice) || strikePrice <= 0) {
-        errors.push('执行价格必须为正数');
+        errors.push('Цена исполнения должна быть положительной');
     }
     
-    // 验证到期时间
+    // Проверка времени до истечения
     if (isNaN(timeToMaturity) || timeToMaturity <= 0) {
-        errors.push('到期时间必须为正数');
+        errors.push('Время до истечения должно быть положительным');
     }
     
-    // 验证无风险利率
+    // Проверка безрисковой ставки
     if (isNaN(riskFreeRate)) {
-        errors.push('无风险利率必须为有效数字');
+        errors.push('Безрисковая ставка должна быть действительным числом');
     }
     
-    // 验证波动率
+    // Проверка волатильности
     if (isNaN(volatility) || volatility < 0) {
-        errors.push('波动率必须为非负数');
+        errors.push('Волатильность должна быть неотрицательной');
     }
     
-    // 验证二叉树步数（如果选择了二叉树模型）
+    // Проверка количества шагов (если выбрана биномиальная модель)
     if (model === 'binomial-tree') {
         if (isNaN(binomialSteps) || binomialSteps < 10 || binomialSteps > 1000) {
-            errors.push('二叉树步数必须在 10 到 1000 之间');
+            errors.push('Количество шагов должно быть от 10 до 1000');
         }
     }
     
-    // 额外的业务逻辑验证
+    // Дополнительная бизнес-логика проверки
     if (!isNaN(volatility) && volatility > 2.0) {
-        errors.push('警告：波动率超过 200%，可能导致不准确的结果');
+        errors.push('Предупреждение: волатильность превышает 200%, результаты могут быть неточными');
     }
     
     if (!isNaN(timeToMaturity) && timeToMaturity > 10) {
-        errors.push('警告：到期时间超过 10 年，可能导致不准确的结果');
+        errors.push('Предупреждение: время до истечения превышает 10 лет, результаты могут быть неточными');
     }
     
     return errors;
@@ -344,35 +344,35 @@ function validateInput(input) {
         case 'strike_price':
             if (isNaN(value) || value <= 0) {
                 isValid = false;
-                errorMessage = '必须为正数';
+                errorMessage = 'Должно быть положительным числом';
             }
             break;
             
         case 'time_to_maturity':
             if (isNaN(value) || value <= 0) {
                 isValid = false;
-                errorMessage = '必须为正数';
+                errorMessage = 'Должно быть положительным числом';
             }
             break;
             
         case 'volatility':
             if (isNaN(value) || value < 0) {
                 isValid = false;
-                errorMessage = '必须为非负数';
+                errorMessage = 'Должно быть неотрицательным числом';
             }
             break;
             
         case 'risk_free_rate':
             if (isNaN(value)) {
                 isValid = false;
-                errorMessage = '必须为有效数字';
+                errorMessage = 'Должно быть действительным числом';
             }
             break;
             
         case 'binomial_steps':
             if (isNaN(value) || value < 10 || value > 1000) {
                 isValid = false;
-                errorMessage = '必须在 10 到 1000 之间';
+                errorMessage = 'Должно быть от 10 до 1000';
             }
             break;
     }
@@ -486,10 +486,10 @@ function setLoadingState(isLoading) {
     });
     
     if (isLoading) {
-        calculateBtn.innerHTML = '<span class="loading"></span> 计算中...';
+        calculateBtn.innerHTML = '<span class="loading"></span> Расчет...';
         calculateBtn.style.cursor = 'wait';
     } else {
-        calculateBtn.innerHTML = '计算期权价格';
+        calculateBtn.innerHTML = 'Рассчитать цену опциона';
         calculateBtn.style.cursor = 'pointer';
     }
 }
@@ -603,78 +603,78 @@ function displayResults(result) {
     const resultsSection = document.getElementById('resultsSection');
     const resultsContent = document.getElementById('resultsContent');
     
-    // 构建结果HTML
+    // Построение HTML результатов
     const html = `
         <div class="results-header">
             <div class="model-info">
-                模型: ${result.model || 'Unknown'}
+                Модель: ${result.model || 'Unknown'}
             </div>
             <div class="computation-time">
-                计算时间: ${result.computation_time_ms || 0} ms
+                Время расчета: ${result.computation_time_ms || 0} мс
             </div>
         </div>
         
         <div class="results-grid">
-            <!-- 期权价格卡片 -->
+            <!-- Карточка цены опциона -->
             <div class="result-card">
-                <h3>期权价格</h3>
+                <h3>Цена опциона</h3>
                 <div class="price-highlight">
-                    <span class="price-label">期权价值</span>
+                    <span class="price-label">Стоимость опциона</span>
                     ${formatNumber(result.option_price)}
                 </div>
                 <table class="result-table">
                     <thead>
                         <tr>
-                            <th>参数</th>
-                            <th>数值</th>
+                            <th>Параметр</th>
+                            <th>Значение</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>期权价格</td>
+                            <td>Цена опциона</td>
                             <td class="result-value">${formatNumber(result.option_price)}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             
-            <!-- 希腊值卡片 -->
+            <!-- Карточка греков -->
             ${result.greeks ? `
             <div class="result-card">
-                <h3>希腊值 (Greeks)</h3>
+                <h3>Греки (Greeks)</h3>
                 <table class="result-table">
                     <thead>
                         <tr>
-                            <th>希腊值</th>
-                            <th>数值</th>
-                            <th>说明</th>
+                            <th>Грек</th>
+                            <th>Значение</th>
+                            <th>Описание</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>Delta (Δ)</td>
                             <td class="result-value">${formatNumber(result.greeks.delta)}</td>
-                            <td>价格变化敏感度</td>
+                            <td>Чувствительность к цене</td>
                         </tr>
                         <tr>
                             <td>Gamma (Γ)</td>
                             <td class="result-value">${formatNumber(result.greeks.gamma)}</td>
-                            <td>Delta变化率</td>
+                            <td>Скорость изменения Delta</td>
                         </tr>
                         <tr>
                             <td>Theta (Θ)</td>
                             <td class="result-value">${formatNumber(result.greeks.theta)}</td>
-                            <td>时间衰减</td>
+                            <td>Временной распад</td>
                         </tr>
                         <tr>
                             <td>Vega (ν)</td>
                             <td class="result-value">${formatNumber(result.greeks.vega)}</td>
-                            <td>波动率敏感度</td>
+                            <td>Чувствительность к волатильности</td>
                         </tr>
                         <tr>
                             <td>Rho (ρ)</td>
                             <td class="result-value">${formatNumber(result.greeks.rho)}</td>
-                            <td>利率敏感度</td>
+                            <td>Чувствительность к ставке</td>
                         </tr>
                     </tbody>
                 </table>
@@ -773,7 +773,7 @@ function renderPriceChart(priceData) {
         data: {
             labels: priceData.x,
             datasets: [{
-                label: '期权价格',
+                label: 'Цена опциона',
                 data: priceData.y,
                 borderColor: '#667eea',
                 backgroundColor: 'rgba(102, 126, 234, 0.1)',
@@ -818,7 +818,7 @@ function renderPriceChart(priceData) {
                     cornerRadius: 6,
                     callbacks: {
                         label: function(context) {
-                            return '期权价格: ' + context.parsed.y.toFixed(4);
+                            return 'Цена опциона: ' + context.parsed.y.toFixed(4);
                         }
                     }
                 }
@@ -853,7 +853,7 @@ function renderPriceChart(priceData) {
                 y: {
                     title: {
                         display: true,
-                        text: '期权价格',
+                        text: 'Цена опциона',
                         font: {
                             size: 14,
                             weight: '600'
@@ -985,7 +985,7 @@ function renderGreeksChart(greeksData) {
                 x: {
                     title: {
                         display: true,
-                        text: '标的资产价格 (S)',
+                        text: 'Цена базового актива (S)',
                         font: {
                             size: 14,
                             weight: '600'
@@ -1011,7 +1011,7 @@ function renderGreeksChart(greeksData) {
                 y: {
                     title: {
                         display: true,
-                        text: '希腊值',
+                        text: 'Значения греков',
                         font: {
                             size: 14,
                             weight: '600'

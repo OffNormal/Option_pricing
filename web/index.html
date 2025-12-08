@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OptionPricer - 期权定价平台</title>
+    <title>OptionPricer - Платформа оценки опционов</title>
     <link rel="stylesheet" href="style.css">
     <!-- Chart.js 库 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -12,28 +12,28 @@
     <div class="container">
         <header>
             <h1>OptionPricer</h1>
-            <p class="subtitle">专业期权定价与分析平台</p>
+            <p class="subtitle">Профессиональная платформа для оценки и анализа опционов</p>
         </header>
 
         <main>
-            <!-- 输入表单区域 -->
+            <!-- Область формы ввода -->
             <section class="input-section">
-                <h2>期权参数</h2>
+                <h2>Параметры опциона</h2>
                 
                 <form id="optionForm">
-                    <!-- 模型选择 -->
+                    <!-- Выбор модели -->
                     <div class="form-group">
-                        <label for="model">定价模型 *</label>
+                        <label for="model">Модель оценки *</label>
                         <select id="model" name="model" required>
-                            <option value="black-scholes">Black-Scholes 模型</option>
-                            <option value="binomial-tree">二叉树模型</option>
+                            <option value="black-scholes">Модель Блэка-Шоулза</option>
+                            <option value="binomial-tree">Биномиальная модель</option>
                         </select>
-                        <span class="help-text">选择期权定价方法</span>
+                        <span class="help-text">Выберите метод оценки опциона</span>
                     </div>
 
-                    <!-- 二叉树步数（仅二叉树模型显示） -->
+                    <!-- Количество шагов биномиального дерева (отображается только для биномиальной модели) -->
                     <div class="form-group" id="binomialStepsGroup" style="display: none;">
-                        <label for="binomial_steps">二叉树步数 *</label>
+                        <label for="binomial_steps">Количество шагов *</label>
                         <input 
                             type="number" 
                             id="binomial_steps" 
@@ -43,134 +43,134 @@
                             value="100"
                             step="10"
                         >
-                        <span class="help-text">步数范围: 10-1000（步数越多，计算越精确但耗时越长）</span>
+                        <span class="help-text">Диапазон: 10-1000 (больше шагов = точнее, но медленнее)</span>
                     </div>
 
-                    <!-- 期权类型 -->
+                    <!-- Тип опциона -->
                     <div class="form-group">
-                        <label for="option_type">期权类型 *</label>
+                        <label for="option_type">Тип опциона *</label>
                         <select id="option_type" name="option_type" required>
-                            <option value="call">看涨期权 (Call)</option>
-                            <option value="put">看跌期权 (Put)</option>
+                            <option value="call">Колл-опцион (Call)</option>
+                            <option value="put">Пут-опцион (Put)</option>
                         </select>
-                        <span class="help-text">选择看涨或看跌期权</span>
+                        <span class="help-text">Выберите колл или пут опцион</span>
                     </div>
 
-                    <!-- 标的资产价格 -->
+                    <!-- Цена базового актива -->
                     <div class="form-group">
-                        <label for="spot_price">标的资产价格 (S) *</label>
+                        <label for="spot_price">Цена базового актива (S) *</label>
                         <input 
                             type="number" 
                             id="spot_price" 
                             name="spot_price" 
                             step="0.01" 
                             min="0.01"
-                            placeholder="例如: 100.00"
+                            placeholder="Например: 100.00"
                             required
                         >
-                        <span class="help-text">当前市场价格（必须为正数）</span>
+                        <span class="help-text">Текущая рыночная цена (должна быть положительной)</span>
                     </div>
 
-                    <!-- 执行价格 -->
+                    <!-- Цена исполнения -->
                     <div class="form-group">
-                        <label for="strike_price">执行价格 (K) *</label>
+                        <label for="strike_price">Цена исполнения (K) *</label>
                         <input 
                             type="number" 
                             id="strike_price" 
                             name="strike_price" 
                             step="0.01" 
                             min="0.01"
-                            placeholder="例如: 105.00"
+                            placeholder="Например: 105.00"
                             required
                         >
-                        <span class="help-text">行权价格（必须为正数）</span>
+                        <span class="help-text">Страйк-цена (должна быть положительной)</span>
                     </div>
 
-                    <!-- 到期时间 -->
+                    <!-- Время до истечения -->
                     <div class="form-group">
-                        <label for="time_to_maturity">到期时间 (T) *</label>
+                        <label for="time_to_maturity">Время до истечения (T) *</label>
                         <input 
                             type="number" 
                             id="time_to_maturity" 
                             name="time_to_maturity" 
                             step="0.01" 
                             min="0.01"
-                            placeholder="例如: 1.0"
+                            placeholder="Например: 1.0"
                             required
                         >
-                        <span class="help-text">距离到期的时间（年，必须为正数）</span>
+                        <span class="help-text">Время до экспирации (в годах, должно быть положительным)</span>
                     </div>
 
-                    <!-- 无风险利率 -->
+                    <!-- Безрисковая ставка -->
                     <div class="form-group">
-                        <label for="risk_free_rate">无风险利率 (r) *</label>
+                        <label for="risk_free_rate">Безрисковая ставка (r) *</label>
                         <input 
                             type="number" 
                             id="risk_free_rate" 
                             name="risk_free_rate" 
                             step="0.0001" 
-                            placeholder="例如: 0.05"
+                            placeholder="Например: 0.05"
                             required
                         >
-                        <span class="help-text">年化无风险利率（小数形式，如 0.05 表示 5%）</span>
+                        <span class="help-text">Годовая безрисковая ставка (в десятичной форме, например 0.05 = 5%)</span>
                     </div>
 
-                    <!-- 波动率 -->
+                    <!-- Волатильность -->
                     <div class="form-group">
-                        <label for="volatility">波动率 (σ) *</label>
+                        <label for="volatility">Волатильность (σ) *</label>
                         <input 
                             type="number" 
                             id="volatility" 
                             name="volatility" 
                             step="0.01" 
                             min="0"
-                            placeholder="例如: 0.20"
+                            placeholder="Например: 0.20"
                             required
                         >
-                        <span class="help-text">年化波动率（小数形式，如 0.20 表示 20%，必须非负）</span>
+                        <span class="help-text">Годовая волатильность (в десятичной форме, например 0.20 = 20%, должна быть неотрицательной)</span>
                     </div>
 
-                    <!-- 错误显示区域 -->
+                    <!-- Область отображения ошибок -->
                     <div id="errorDisplay" class="error-display" style="display: none;">
-                        <h4>输入错误：</h4>
+                        <h4>Ошибки ввода:</h4>
                         <ul id="errorList"></ul>
                     </div>
 
-                    <!-- 提交按钮 -->
+                    <!-- Кнопки отправки -->
                     <div class="form-actions">
                         <button type="submit" id="calculateBtn" class="btn btn-primary">
-                            计算期权价格
+                            Рассчитать цену опциона
                         </button>
                         <button type="button" id="resetBtn" class="btn btn-secondary">
-                            重置表单
+                            Сбросить форму
                         </button>
                     </div>
                 </form>
             </section>
 
-            <!-- 结果显示区域（将在后续任务中实现） -->
+            <!-- Область отображения результатов -->
             <section class="results-section" id="resultsSection" style="display: none;">
-                <h2>计算结果</h2>
+                <h2>Результаты расчета</h2>
                 <div id="resultsContent">
-                    <!-- 结果将通过 JavaScript 动态插入 -->
+                    <!-- Результаты будут вставлены динамически через JavaScript -->
                 </div>
             </section>
 
-            <!-- 可视化区域 -->
+            <!-- Область визуализации -->
             <section class="visualization-section" id="visualizationSection" style="display: none;">
-                <h2>可视化分析</h2>
+                <h2>Визуальный анализ</h2>
                 <div id="visualizationContent">
-                    <!-- 图表网格布局 -->
+                    <!-- Сетка графиков -->
                     <div class="charts-grid">
-                        <!-- 价格曲线图表 -->
+                        <!-- График цены опциона -->
                         <div class="chart-container">
-                            <h3>期权价格曲线</h3>
+                            <h3>Кривая цены опциона</h3>
                             <canvas id="priceChart"></canvas>
                         </div>
                         
-                        <!-- 希腊值曲线图表 -->
+                        <!-- График греков -->
                         <div class="chart-container">
-                            <h3>希腊值曲线</h3>
+                            <h3>Кривые греков</h3>
                             <canvas id="greeksChart"></canvas>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2024 OptionPricer. 基于 Black-Scholes 和二叉树模型的期权定价系统。</p>
+            <p>&copy; 2024 OptionPricer. Система оценки опционов на основе моделей Блэка-Шоулза и биномиального дерева.</p>
         </footer>
     </div>
 
