@@ -254,9 +254,9 @@ double BlackScholesEngine::calculate_call_price(const OptionParams& params,
     double T = params.time_to_maturity;
     double r = params.risk_free_rate;
     
-    // 计算N(d1)和N(d2)
-    double N_d1 = math::normal_cdf(d1);
-    double N_d2 = math::normal_cdf(d2);
+    // 计算N(d1)和N(d2) - 使用快速查表法
+    double N_d1 = math::normal_cdf_fast(d1);
+    double N_d2 = math::normal_cdf_fast(d2);
     
     // 计算折现因子
     double discount_factor = std::exp(-r * T);
@@ -276,9 +276,9 @@ double BlackScholesEngine::calculate_put_price(const OptionParams& params,
     double T = params.time_to_maturity;
     double r = params.risk_free_rate;
     
-    // 计算N(-d1)和N(-d2)
-    double N_minus_d1 = math::normal_cdf(-d1);
-    double N_minus_d2 = math::normal_cdf(-d2);
+    // 计算N(-d1)和N(-d2) - 使用快速查表法
+    double N_minus_d1 = math::normal_cdf_fast(-d1);
+    double N_minus_d2 = math::normal_cdf_fast(-d2);
     
     // 计算折现因子
     double discount_factor = std::exp(-r * T);
@@ -303,8 +303,8 @@ Greeks BlackScholesEngine::calculate_greeks(const OptionParams& params,
     double sqrt_T = std::sqrt(T);
     double discount_factor = std::exp(-r * T);
     double n_d1 = math::normal_pdf(d1);  // φ(d1) - 标准正态PDF
-    double N_d1 = math::normal_cdf(d1);  // N(d1) - 标准正态CDF
-    double N_d2 = math::normal_cdf(d2);  // N(d2)
+    double N_d1 = math::normal_cdf_fast(d1);  // N(d1) - 标准正态CDF（使用快速查表法）
+    double N_d2 = math::normal_cdf_fast(d2);  // N(d2)（使用快速查表法）
     
     // Delta: ∂V/∂S
     // 看涨期权: Delta = N(d1)
@@ -338,7 +338,7 @@ Greeks BlackScholesEngine::calculate_greeks(const OptionParams& params,
     if (params.option_type == OptionType::Call) {
         greeks.theta = theta_common - r * K * discount_factor * N_d2;
     } else {
-        double N_minus_d2 = math::normal_cdf(-d2);
+        double N_minus_d2 = math::normal_cdf_fast(-d2);
         greeks.theta = theta_common + r * K * discount_factor * N_minus_d2;
     }
     
@@ -348,7 +348,7 @@ Greeks BlackScholesEngine::calculate_greeks(const OptionParams& params,
     if (params.option_type == OptionType::Call) {
         greeks.rho = K * T * discount_factor * N_d2;
     } else {
-        double N_minus_d2 = math::normal_cdf(-d2);
+        double N_minus_d2 = math::normal_cdf_fast(-d2);
         greeks.rho = -K * T * discount_factor * N_minus_d2;
     }
     

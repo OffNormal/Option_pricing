@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API通信测试 - OptionPricer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+        }
+        h2 {
+            color: #444;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            border-left: 4px solid #43e97b;
+        }
+        .error {
+            border-left: 4px solid #e74c3c;
+        }
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>OptionPricer API通信测试</h1>
+    
+    <div class="test-section">
+        <h2>测试 1: 价格计算API (Black-Scholes)</h2>
+        <button id="testPrice1" onclick="testPriceAPI1()">运行测试</button>
+        <div id="result1" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试 2: 价格计算API (二叉树模型)</h2>
+        <button id="testPrice2" onclick="testPriceAPI2()">运行测试</button>
+        <div id="result2" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试 3: 可视化数据API</h2>
+        <button id="testViz" onclick="testVisualizationAPI()">运行测试</button>
+        <div id="result3" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试 4: 错误处理 (无效输入)</h2>
+        <button id="testError" onclick="testErrorHandling()">运行测试</button>
+        <div id="result4" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试 5: 网络超时</h2>
+        <button id="testTimeout" onclick="testTimeout()">运行测试</button>
+        <div id="result5" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        async function testPriceAPI1() {
+            const btn = document.getElementById('testPrice1');
+            const result = document.getElementById('result1');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>测试中...';
+            result.style.display = 'block';
+            result.className = 'result';
+            result.textContent = '正在发送请求...';
+            
+            try {
+                const response = await fetch('/api/price', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'black-scholes',
+                        option_type: 'call',
+                        spot_price: 100.0,
+                        strike_price: 105.0,
+                        time_to_maturity: 1.0,
+                        risk_free_rate: 0.05,
+                        volatility: 0.2
+                    })
+                });
+                
+                const data = await response.json();
+                
+                result.className = 'result ' + (response.ok ? 'success' : 'error');
+                result.textContent = '状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = '错误: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '运行测试';
+            }
+        }
+        
+        async function testPriceAPI2() {
+            const btn = document.getElementById('testPrice2');
+            const result = document.getElementById('result2');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>测试中...';
+            result.style.display = 'block';
+            result.className = 'result';
+            result.textContent = '正在发送请求...';
+            
+            try {
+                const response = await fetch('/api/price', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'binomial-tree',
+                        option_type: 'put',
+                        spot_price: 100.0,
+                        strike_price: 105.0,
+                        time_to_maturity: 1.0,
+                        risk_free_rate: 0.05,
+                        volatility: 0.2,
+                        binomial_steps: 100
+                    })
+                });
+                
+                const data = await response.json();
+                
+                result.className = 'result ' + (response.ok ? 'success' : 'error');
+                result.textContent = '状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = '错误: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '运行测试';
+            }
+        }
+        
+        async function testVisualizationAPI() {
+            const btn = document.getElementById('testViz');
+            const result = document.getElementById('result3');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>测试中...';
+            result.style.display = 'block';
+            result.className = 'result';
+            result.textContent = '正在发送请求...';
+            
+            try {
+                const response = await fetch('/api/visualize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'black-scholes',
+                        option_type: 'call',
+                        spot_price: 100.0,
+                        strike_price: 105.0,
+                        time_to_maturity: 1.0,
+                        risk_free_rate: 0.05,
+                        volatility: 0.2,
+                        points: 30
+                    })
+                });
+                
+                const data = await response.json();
+                
+                result.className = 'result ' + (response.ok ? 'success' : 'error');
+                
+                // 简化显示（只显示数据点数量）
+                if (data.visualization_data) {
+                    const vizData = data.visualization_data;
+                    const summary = {
+                        success: data.success,
+                        model: data.model,
+                        computation_time_ms: data.computation_time_ms,
+                        price_curve_points: vizData.price_curve ? vizData.price_curve.x.length : 0,
+                        greeks_curves: vizData.greeks_curves ? Object.keys(vizData.greeks_curves) : []
+                    };
+                    result.textContent = '状态码: ' + response.status + '\n\n响应摘要:\n' + JSON.stringify(summary, null, 2);
+                } else {
+                    result.textContent = '状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                }
+                
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = '错误: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '运行测试';
+            }
+        }
+        
+        async function testErrorHandling() {
+            const btn = document.getElementById('testError');
+            const result = document.getElementById('result4');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>测试中...';
+            result.style.display = 'block';
+            result.className = 'result';
+            result.textContent = '正在发送请求（包含无效数据）...';
+            
+            try {
+                const response = await fetch('/api/price', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'black-scholes',
+                        option_type: 'call',
+                        spot_price: -100.0,  // 无效：负数
+                        strike_price: 105.0,
+                        time_to_maturity: -1.0,  // 无效：负数
+                        risk_free_rate: 0.05,
+                        volatility: -0.2  // 无效：负数
+                    })
+                });
+                
+                const data = await response.json();
+                
+                result.className = 'result ' + (response.status === 400 ? 'success' : 'error');
+                result.textContent = '状态码: ' + response.status + ' (期望: 400)\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = '错误: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '运行测试';
+            }
+        }
+        
+        async function testTimeout() {
+            const btn = document.getElementById('testTimeout');
+            const result = document.getElementById('result5');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>测试中...';
+            result.style.display = 'block';
+            result.className = 'result';
+            result.textContent = '正在测试超时处理（1秒超时）...';
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1000);
+                
+                const response = await fetch('/api/price', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'binomial-tree',
+                        option_type: 'call',
+                        spot_price: 100.0,
+                        strike_price: 105.0,
+                        time_to_maturity: 1.0,
+                        risk_free_rate: 0.05,
+                        volatility: 0.2,
+                        binomial_steps: 1000  // 大步数可能导致较长计算时间
+                    }),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const data = await response.json();
+                
+                result.className = 'result success';
+                result.textContent = '请求在超时前完成\n状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    result.className = 'result success';
+                    result.textContent = '✓ 超时处理正常工作\n错误类型: ' + error.name + '\n错误消息: 请求已中止';
+                } else {
+                    result.className = 'result error';
+                    result.textContent = '错误: ' + error.message;
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '运行测试';
+            }
+        }
+    </script>
+</body>
+</html>

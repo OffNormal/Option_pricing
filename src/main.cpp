@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <csignal>
+#include "option_pricer_server.h"
 
 /**
  * OptionPricer - Option Pricing Platform
@@ -8,9 +10,21 @@
  * Requirements: 7.1 - Layered architecture with separation between pricing engine and web server
  */
 
+// Global server pointer for signal handling
+option_pricer::OptionPricerServer* g_server = nullptr;
+
+void signal_handler(int signal) {
+    if (signal == SIGINT || signal == SIGTERM) {
+        std::cout << "\nShutting down server..." << std::endl;
+        if (g_server) {
+            g_server->stop();
+        }
+    }
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "OptionPricer - Option Pricing Platform" << std::endl;
-    std::cout << "Version: 0.1.0" << std::endl;
+    std::cout << "Version: 1.0.0" << std::endl;
     std::cout << std::endl;
     
     // Default port
@@ -36,10 +50,23 @@ int main(int argc, char* argv[]) {
         }
     }
     
-    std::cout << "Configured port: " << port << std::endl;
-    std::cout << std::endl;
-    std::cout << "Note: HTTP server functionality will be implemented in subsequent tasks." << std::endl;
-    std::cout << "This is currently a basic project structure framework." << std::endl;
+    try {
+        // Create and start HTTP server
+        option_pricer::OptionPricerServer server(port);
+        g_server = &server;
+        
+        // Set up signal handlers for graceful shutdown
+        std::signal(SIGINT, signal_handler);
+        std::signal(SIGTERM, signal_handler);
+        
+        // Start server (blocking call)
+        server.start();
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
     
+    std::cout << "Server stopped." << std::endl;
     return 0;
 }

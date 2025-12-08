@@ -17,6 +17,16 @@ namespace math {
 double normal_cdf(double x);
 
 /**
+ * 标准正态分布累积分布函数 (CDF) - 使用查表法优化
+ * 对于常见范围内的值使用预计算的查找表，提高性能
+ * 对于超出范围的值回退到精确计算
+ * 
+ * @param x 输入值
+ * @return 累积概率，范围 [0, 1]
+ */
+double normal_cdf_fast(double x);
+
+/**
  * 标准正态分布概率密度函数 (PDF)
  * 计算 f(x) = (1/sqrt(2π)) * exp(-x²/2)
  * 

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptionPricer - 期权定价平台</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>OptionPricer</h1>
+            <p class="subtitle">专业期权定价与分析平台</p>
+        </header>
+
+        <main>
+            <!-- 输入表单区域 -->
+            <section class="input-section">
+                <h2>期权参数</h2>
+                
+                <form id="optionForm">
+                    <!-- 模型选择 -->
+                    <div class="form-group">
+                        <label for="model">定价模型 *</label>
+                        <select id="model" name="model" required>
+                            <option value="black-scholes">Black-Scholes 模型</option>
+                            <option value="binomial-tree">二叉树模型</option>
+                        </select>
+                        <span class="help-text">选择期权定价方法</span>
+                    </div>
+
+                    <!-- 二叉树步数（仅二叉树模型显示） -->
+                    <div class="form-group" id="binomialStepsGroup" style="display: none;">
+                        <label for="binomial_steps">二叉树步数 *</label>
+                        <input 
+                            type="number" 
+                            id="binomial_steps" 
+                            name="binomial_steps" 
+                            min="10" 
+                            max="1000" 
+                            value="100"
+                            step="10"
+                        >
+                        <span class="help-text">步数范围: 10-1000（步数越多，计算越精确但耗时越长）</span>
+                    </div>
+
+                    <!-- 期权类型 -->
+                    <div class="form-group">
+                        <label for="option_type">期权类型 *</label>
+                        <select id="option_type" name="option_type" required>
+                            <option value="call">看涨期权 (Call)</option>
+                            <option value="put">看跌期权 (Put)</option>
+                        </select>
+                        <span class="help-text">选择看涨或看跌期权</span>
+                    </div>
+
+                    <!-- 标的资产价格 -->
+                    <div class="form-group">
+                        <label for="spot_price">标的资产价格 (S) *</label>
+                        <input 
+                            type="number" 
+                            id="spot_price" 
+                            name="spot_price" 
+                            step="0.01" 
+                            min="0.01"
+                            placeholder="例如: 100.00"
+                            required
+                        >
+                        <span class="help-text">当前市场价格（必须为正数）</span>
+                    </div>
+
+                    <!-- 执行价格 -->
+                    <div class="form-group">
+                        <label for="strike_price">执行价格 (K) *</label>
+                        <input 
+                            type="number" 
+                            id="strike_price" 
+                            name="strike_price" 
+                            step="0.01" 
+                            min="0.01"
+                            placeholder="例如: 105.00"
+                            required
+                        >
+                        <span class="help-text">行权价格（必须为正数）</span>
+                    </div>
+
+                    <!-- 到期时间 -->
+                    <div class="form-group">
+                        <label for="time_to_maturity">到期时间 (T) *</label>
+                        <input 
+                            type="number" 
+                            id="time_to_maturity" 
+                            name="time_to_maturity" 
+                            step="0.01" 
+                            min="0.01"
+                            placeholder="例如: 1.0"
+                            required
+                        >
+                        <span class="help-text">距离到期的时间（年，必须为正数）</span>
+                    </div>
+
+                    <!-- 无风险利率 -->
+                    <div class="form-group">
+                        <label for="risk_free_rate">无风险利率 (r) *</label>
+                        <input 
+                            type="number" 
+                            id="risk_free_rate" 
+                            name="risk_free_rate" 
+                            step="0.0001" 
+                            placeholder="例如: 0.05"
+                            required
+                        >
+                        <span class="help-text">年化无风险利率（小数形式，如 0.05 表示 5%）</span>
+                    </div>
+
+                    <!-- 波动率 -->
+                    <div class="form-group">
+                        <label for="volatility">波动率 (σ) *</label>
+                        <input 
+                            type="number" 
+                            id="volatility" 
+                            name="volatility" 
+                            step="0.01" 
+                            min="0"
+                            placeholder="例如: 0.20"
+                            required
+                        >
+                        <span class="help-text">年化波动率（小数形式，如 0.20 表示 20%，必须非负）</span>
+                    </div>
+
+                    <!-- 错误显示区域 -->
+                    <div id="errorDisplay" class="error-display" style="display: none;">
+                        <h4>输入错误：</h4>
+                        <ul id="errorList"></ul>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="form-actions">
+                        <button type="submit" id="calculateBtn" class="btn btn-primary">
+                            计算期权价格
+                        </button>
+                        <button type="button" id="resetBtn" class="btn btn-secondary">
+                            重置表单
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- 结果显示区域（将在后续任务中实现） -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2>计算结果</h2>
+                <div id="resultsContent">
+                    <!-- 结果将通过 JavaScript 动态插入 -->
+                </div>
+            </section>
+
+            <!-- 可视化区域 -->
+            <section class="visualization-section" id="visualizationSection" style="display: none;">
+                <h2>可视化分析</h2>
+                <div id="visualizationContent">
+                    <!-- 图表网格布局 -->
+                    <div class="charts-grid">
+                        <!-- 价格曲线图表 -->
+                        <div class="chart-container">
+                            <h3>期权价格曲线</h3>
+                            <canvas id="priceChart"></canvas>
+                        </div>
+                        
+                        <!-- 希腊值曲线图表 -->
+                        <div class="chart-container">
+                            <h3>希腊值曲线</h3>
+                            <canvas id="greeksChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 OptionPricer. 基于 Black-Scholes 和二叉树模型的期权定价系统。</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript 文件将在后续任务中实现 -->
+    <script src="app.js"></script>
+</body>
+</html>

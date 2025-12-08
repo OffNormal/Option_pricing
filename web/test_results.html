@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results Display Test - OptionPricer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Results Display Test</h1>
+            <p class="subtitle">测试结果显示功能</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <h2>测试控制</h2>
+                <button onclick="testBlackScholesResults()" class="btn btn-primary">
+                    测试 Black-Scholes 结果
+                </button>
+                <button onclick="testBinomialResults()" class="btn btn-primary" style="margin-top: 10px;">
+                    测试二叉树结果
+                </button>
+                <button onclick="testWithoutGreeks()" class="btn btn-secondary" style="margin-top: 10px;">
+                    测试无希腊值结果
+                </button>
+            </section>
+
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2>计算结果</h2>
+                <div id="resultsContent">
+                    <!-- 结果将通过 JavaScript 动态插入 -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // 格式化数字为四位小数
+        function formatNumber(value) {
+            if (typeof value !== 'number' || isNaN(value)) {
+                return 'N/A';
+            }
+            return value.toFixed(4);
+        }
+
+        // 显示计算结果
+        function displayResults(result) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            const html = `
+                <div class="results-header">
+                    <div class="model-info">
+                        模型: ${result.model || 'Unknown'}
+                    </div>
+                    <div class="computation-time">
+                        计算时间: ${result.computation_time_ms || 0} ms
+                    </div>
+                </div>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>期权价格</h3>
+                        <div class="price-highlight">
+                            <span class="price-label">期权价值</span>
+                            ${formatNumber(result.option_price)}
+                        </div>
+                        <table class="result-table">
+                            <thead>
+                                <tr>
+                                    <th>参数</th>
+                                    <th>数值</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>期权价格</td>
+                                    <td class="result-value">${formatNumber(result.option_price)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    ${result.greeks ? `
+                    <div class="result-card">
+                        <h3>希腊值 (Greeks)</h3>
+                        <table class="result-table">
+                            <thead>
+                                <tr>
+                                    <th>希腊值</th>
+                                    <th>数值</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Delta (Δ)</td>
+                                    <td class="result-value">${formatNumber(result.greeks.delta)}</td>
+                                    <td>价格变化敏感度</td>
+                                </tr>
+                                <tr>
+                                    <td>Gamma (Γ)</td>
+                                    <td class="result-value">${formatNumber(result.greeks.gamma)}</td>
+                                    <td>Delta变化率</td>
+                                </tr>
+                                <tr>
+                                    <td>Theta (Θ)</td>
+                                    <td class="result-value">${formatNumber(result.greeks.theta)}</td>
+                                    <td>时间衰减</td>
+                                </tr>
+                                <tr>
+                                    <td>Vega (ν)</td>
+                                    <td class="result-value">${formatNumber(result.greeks.vega)}</td>
+                                    <td>波动率敏感度</td>
+                                </tr>
+                                <tr>
+                                    <td>Rho (ρ)</td>
+                                    <td class="result-value">${formatNumber(result.greeks.rho)}</td>
+                                    <td>利率敏感度</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            resultsContent.innerHTML = html;
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // 测试 Black-Scholes 结果
+        function testBlackScholesResults() {
+            const result = {
+                success: true,
+                model: 'Black-Scholes',
+                option_price: 8.9162,
+                greeks: {
+                    delta: 0.5596,
+                    gamma: 0.0184,
+                    theta: -6.4135,
+                    vega: 36.7311,
+                    rho: 51.8644
+                },
+                computation_time_ms: 12
+            };
+            displayResults(result);
+        }
+
+        // 测试二叉树结果
+        function testBinomialResults() {
+            const result = {
+                success: true,
+                model: 'Binomial Tree (100 steps)',
+                option_price: 8.9245,
+                greeks: {
+                    delta: 0.5601,
+                    gamma: 0.0185,
+                    theta: -6.4289,
+                    vega: 36.7892,
+                    rho: 51.9123
+                },
+                computation_time_ms: 145
+            };
+            displayResults(result);
+        }
+
+        // 测试无希腊值结果
+        function testWithoutGreeks() {
+            const result = {
+                success: true,
+                model: 'Black-Scholes',
+                option_price: 12.3456,
+                computation_time_ms: 8
+            };
+            displayResults(result);
+        }
+    </script>
+</body>
+</html>

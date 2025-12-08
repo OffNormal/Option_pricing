@@ -308,21 +308,39 @@ double BinomialTreeEngine::calculate_option_price(const OptionParams& params) co
         throw std::overflow_error("Invalid discount factor calculated");
     }
     
-    // 初始化最后一层的期权价值
+    // 性能优化：预分配向量并使用reserve避免重新分配
     // 使用单个向量来存储当前层的值，节省内存
-    std::vector<double> option_values(steps_ + 1);
+    std::vector<double> option_values;
+    option_values.reserve(steps_ + 1);
+    option_values.resize(steps_ + 1);
+    
+    // 性能优化：预计算u和d的幂次，避免重复调用pow
+    // 计算u^i和d^i的值
+    std::vector<double> u_powers;
+    std::vector<double> d_powers;
+    u_powers.reserve(steps_ + 1);
+    d_powers.reserve(steps_ + 1);
+    
+    u_powers.push_back(1.0);  // u^0
+    d_powers.push_back(1.0);  // d^0
+    
+    for (int i = 1; i <= steps_; ++i) {
+        u_powers.push_back(u_powers[i - 1] * u);  // u^i = u^(i-1) * u
+        d_powers.push_back(d_powers[i - 1] * d);  // d^i = d^(i-1) * d
+    }
     
     // 计算到期时每个节点的标的资产价格和期权价值
     for (int i = 0; i <= steps_; ++i) {
         // 在第i个节点，经历了i次上涨和(steps_-i)次下跌
-        double spot_at_node = params.spot_price * std::pow(u, i) * std::pow(d, steps_ - i);
+        // 使用预计算的幂次值，避免调用pow函数
+        double spot_at_node = params.spot_price * u_powers[i] * d_powers[steps_ - i];
         
         // 检查资产价格是否有效
         if (!std::isfinite(spot_at_node)) {
             std::stringstream ss;
             ss << "Non-finite spot price at node i=" << i 
-               << ", u^i=" << std::pow(u, i) 
-               << ", d^(n-i)=" << std::pow(d, steps_ - i);
+               << ", u^i=" << u_powers[i]
+               << ", d^(n-i)=" << d_powers[steps_ - i];
             throw std::overflow_error(ss.str());
         }
         
@@ -334,18 +352,22 @@ double BinomialTreeEngine::calculate_option_price(const OptionParams& params) co
         }
     }
     
+    // 性能优化：预计算折现后的概率，减少乘法运算
+    double discount_p = discount * p;
+    double discount_1_minus_p = discount * (1.0 - p);
+    
     // 向后递推计算期权价格
     for (int step = steps_ - 1; step >= 0; --step) {
         for (int i = 0; i <= step; ++i) {
-            // 计算期望价值并折现
-            double expected_value = p * option_values[i + 1] + (1.0 - p) * option_values[i];
+            // 计算期望价值并折现（使用预计算的值）
+            double expected_value = discount_p * option_values[i + 1] + discount_1_minus_p * option_values[i];
             
             // 检查期望值
             if (!std::isfinite(expected_value)) {
                 throw std::overflow_error("Non-finite expected value during backward induction");
             }
             
-            option_values[i] = discount * expected_value;
+            option_values[i] = expected_value;
             
             // 检查折现后的值
             if (!std::isfinite(option_values[i])) {

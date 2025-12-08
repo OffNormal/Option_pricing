@@ -34,6 +34,14 @@ if(NOT nlohmann_json_FOUND)
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
+# 获取cpp-httplib（header-only HTTP库）
+FetchContent_Declare(
+    httplib
+    GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+    GIT_TAG v0.14.3
+)
+FetchContent_MakeAvailable(httplib)
+
 # 如果找不到GTest，使用FetchContent
 if(NOT GTest_FOUND)
     FetchContent_Declare(
@@ -61,6 +69,7 @@ set(OPTION_PRICER_SOURCES
     src/parameter_validator.cpp
     src/visualization_generator.cpp
     src/json_serialization.cpp
+    src/option_pricer_server.cpp
 )
 
 # 主可执行文件
@@ -68,6 +77,7 @@ add_executable(option_pricer ${OPTION_PRICER_SOURCES})
 
 target_link_libraries(option_pricer
     nlohmann_json::nlohmann_json
+    httplib::httplib
 )
 
 # Windows特定链接库
@@ -89,6 +99,7 @@ if(GTest_FOUND)
         src/parameter_validator.cpp
         src/visualization_generator.cpp
         src/json_serialization.cpp
+        src/option_pricer_server.cpp
     )
     
     # 测试源文件（将在后续任务中添加）
@@ -103,6 +114,8 @@ if(GTest_FOUND)
         tests/test_error_handling.cpp
         tests/test_visualization_generator.cpp
         tests/test_json_serialization.cpp
+        tests/test_timeout_control.cpp
+        tests/test_performance.cpp
         # tests/test_properties_pricing.cpp
         # tests/test_properties_greeks.cpp
     )
@@ -114,6 +127,7 @@ if(GTest_FOUND)
             GTest::GTest
             GTest::Main
             nlohmann_json::nlohmann_json
+            httplib::httplib
         )
         
         # 添加测试

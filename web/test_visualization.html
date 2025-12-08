@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart.js 可视化测试</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Chart.js 可视化测试</h1>
+            <p class="subtitle">测试价格曲线和希腊值图表</p>
+        </header>
+
+        <main>
+            <section class="visualization-section">
+                <h2>可视化图表</h2>
+                <div id="visualizationContent">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <h3>期权价格曲线</h3>
+                            <canvas id="priceChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>希腊值曲线</h3>
+                            <canvas id="greeksChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // 测试数据
+        const testData = {
+            price_curve: {
+                x: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140],
+                y: [0.12, 0.35, 0.89, 1.95, 3.78, 6.45, 9.87, 13.56, 17.23, 20.65, 23.78, 26.54, 29.01, 31.23, 33.25, 35.12, 36.87]
+            },
+            greeks_curves: {
+                delta: {
+                    x: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140],
+                    y: [0.05, 0.12, 0.23, 0.38, 0.52, 0.64, 0.73, 0.79, 0.84, 0.87, 0.90, 0.92, 0.94, 0.95, 0.96, 0.97, 0.98]
+                },
+                gamma: {
+                    x: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140],
+                    y: [0.002, 0.005, 0.010, 0.016, 0.021, 0.024, 0.025, 0.024, 0.021, 0.017, 0.013, 0.009, 0.006, 0.004, 0.003, 0.002, 0.001]
+                },
+                theta: {
+                    x: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140],
+                    y: [-0.5, -1.2, -2.3, -3.8, -5.2, -6.4, -7.3, -7.9, -8.2, -8.3, -8.1, -7.8, -7.3, -6.7, -6.1, -5.5, -4.9]
+                },
+                vega: {
+                    x: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140],
+                    y: [5.2, 10.5, 18.3, 26.8, 33.5, 37.2, 38.1, 36.8, 33.9, 29.8, 25.2, 20.5, 16.2, 12.5, 9.5, 7.2, 5.4]
+                },
+                rho: {
+                    x: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140],
+                    y: [8.5, 15.2, 23.8, 32.5, 40.2, 46.5, 51.2, 54.5, 56.8, 58.2, 59.1, 59.6, 59.9, 60.1, 60.2, 60.3, 60.4]
+                }
+            }
+        };
+
+        // 渲染价格曲线
+        function renderPriceChart(priceData) {
+            const ctx = document.getElementById('priceChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: priceData.x,
+                    datasets: [{
+                        label: '期权价格',
+                        data: priceData.y,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: 14, weight: '600' },
+                                color: '#444',
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            callbacks: {
+                                label: function(context) {
+                                    return '期权价格: ' + context.parsed.y.toFixed(4);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '标的资产价格 (S)',
+                                font: { size: 14, weight: '600' },
+                                color: '#444'
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '期权价格',
+                                font: { size: 14, weight: '600' },
+                                color: '#444'
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 渲染希腊值曲线
+        function renderGreeksChart(greeksData) {
+            const ctx = document.getElementById('greeksChart');
+            const greeksConfig = {
+                delta: { label: 'Delta (Δ)', color: '#667eea' },
+                gamma: { label: 'Gamma (Γ)', color: '#f093fb' },
+                theta: { label: 'Theta (Θ)', color: '#4facfe' },
+                vega: { label: 'Vega (ν)', color: '#43e97b' },
+                rho: { label: 'Rho (ρ)', color: '#fa709a' }
+            };
+            
+            const datasets = [];
+            for (const [greekName, greekData] of Object.entries(greeksData)) {
+                if (greeksConfig[greekName]) {
+                    const config = greeksConfig[greekName];
+                    datasets.push({
+                        label: config.label,
+                        data: greekData.y,
+                        borderColor: config.color,
+                        backgroundColor: config.color + '20',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 2,
+                        pointHoverRadius: 5
+                    });
+                }
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: greeksData.delta.x,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: 13, weight: '600' },
+                                color: '#444',
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(4);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '标的资产价格 (S)',
+                                font: { size: 14, weight: '600' },
+                                color: '#444'
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '希腊值',
+                                font: { size: 14, weight: '600' },
+                                color: '#444'
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 页面加载后渲染图表
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPriceChart(testData.price_curve);
+            renderGreeksChart(testData.greeks_curves);
+        });
+    </script>
+</body>
+</html>

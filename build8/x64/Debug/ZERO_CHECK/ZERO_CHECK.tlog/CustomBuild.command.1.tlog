@@ -1,0 +1,10 @@
+^C:\USERS\XHS20\DESKTOP\CODE\C++\OPTION_PRICING\BUILD8\CMAKEFILES\8C824E5FE8EE6E8E48BCDED988658C29\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/xhs20/Desktop/code/c++/Option_pricing -BC:/Users/xhs20/Desktop/code/c++/Option_pricing/build8 --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/xhs20/Desktop/code/c++/Option_pricing/build8/OptionPricer.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
