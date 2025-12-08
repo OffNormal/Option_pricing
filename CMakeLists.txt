@@ -21,21 +21,40 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 find_package(nlohmann_json QUIET)
 find_package(GTest QUIET)
 
+# 使用FetchContent获取依赖项
+include(FetchContent)
+
 # 如果找不到nlohmann_json，使用FetchContent
 if(NOT nlohmann_json_FOUND)
-    include(FetchContent)
     FetchContent_Declare(
         nlohmann_json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.3
+        URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
     )
     set(JSON_BuildTests OFF CACHE INTERNAL "")
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
+# 如果找不到GTest，使用FetchContent
+if(NOT GTest_FOUND)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.14.0
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+    # Create aliases to match find_package
+    add_library(GTest::GTest ALIAS gtest)
+    add_library(GTest::Main ALIAS gtest_main)
+    set(GTest_FOUND TRUE)
+endif()
+
 # 源文件列表（将在后续任务中添加）
 set(OPTION_PRICER_SOURCES
     src/main.cpp
+    src/math_utils.cpp
+    src/black_scholes_engine.cpp
 )
 
 # 主可执行文件
@@ -54,10 +73,17 @@ endif()
 if(GTest_FOUND)
     enable_testing()
     
+    # 共享源文件（测试需要的实现文件）
+    set(SHARED_SOURCES
+        src/math_utils.cpp
+        src/black_scholes_engine.cpp
+    )
+    
     # 测试源文件（将在后续任务中添加）
     set(TEST_SOURCES
         tests/test_core_structures.cpp
-        # tests/test_black_scholes.cpp
+        tests/test_math_utils.cpp
+        tests/test_black_scholes.cpp
         # tests/test_binomial_tree.cpp
         # tests/test_properties_pricing.cpp
         # tests/test_properties_greeks.cpp
@@ -65,7 +91,7 @@ if(GTest_FOUND)
     )
     
     if(TEST_SOURCES)
-        add_executable(option_pricer_tests ${TEST_SOURCES})
+        add_executable(option_pricer_tests ${TEST_SOURCES} ${SHARED_SOURCES})
         
         target_link_libraries(option_pricer_tests
             GTest::GTest
