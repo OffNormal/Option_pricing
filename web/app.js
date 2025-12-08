@@ -1,6 +1,6 @@
 // OptionPricer Frontend JavaScript
 
-// DOM元素
+// DOM элементы
 const optionForm = document.getElementById('optionForm');
 const modelSelect = document.getElementById('model');
 const binomialStepsGroup = document.getElementById('binomialStepsGroup');
@@ -9,26 +9,26 @@ const errorList = document.getElementById('errorList');
 const calculateBtn = document.getElementById('calculateBtn');
 const resetBtn = document.getElementById('resetBtn');
 
-// 初始化
+// Инициализация
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     loadDefaultValues();
 });
 
 /**
- * 设置事件监听器
+ * Настройка обработчиков событий
  */
 function setupEventListeners() {
-    // 模型选择变化时显示/隐藏二叉树步数输入
+    // Показать/скрыть поле количества шагов при изменении модели
     modelSelect.addEventListener('change', handleModelChange);
     
-    // 表单提交
+    // Отправка формы
     optionForm.addEventListener('submit', handleFormSubmit);
     
-    // 重置按钮
+    // Кнопка сброса
     resetBtn.addEventListener('click', handleFormReset);
     
-    // 实时输入验证
+    // Проверка ввода в реальном времени
     const inputs = optionForm.querySelectorAll('input[type="number"]');
     inputs.forEach(input => {
         input.addEventListener('blur', () => validateInput(input));
@@ -37,10 +37,10 @@ function setupEventListeners() {
 }
 
 /**
- * 加载默认值
+ * Загрузка значений по умолчанию
  */
 function loadDefaultValues() {
-    // 设置一些合理的默认值
+    // Установка разумных значений по умолчанию
     document.getElementById('spot_price').value = '100';
     document.getElementById('strike_price').value = '105';
     document.getElementById('time_to_maturity').value = '1.0';
@@ -49,7 +49,7 @@ function loadDefaultValues() {
 }
 
 /**
- * 处理模型选择变化
+ * Обработка изменения выбора модели
  */
 function handleModelChange() {
     const selectedModel = modelSelect.value;
@@ -64,18 +64,18 @@ function handleModelChange() {
 }
 
 // ============================================================================
-// API通信功能
+// Функции API-коммуникации
 // ============================================================================
 
 /**
- * 调用价格计算API
- * @param {Object} formData 表单数据
- * @returns {Promise<Object>} API响应数据
+ * Вызов API расчета цены
+ * @param {Object} formData Данные формы
+ * @returns {Promise<Object>} Данные ответа API
  */
 async function callPriceAPI(formData) {
     const apiUrl = '/api/price';
     
-    // 构建请求体
+    // Построение тела запроса
     const requestBody = {
         model: formData.model,
         option_type: formData.option_type,
@@ -86,13 +86,13 @@ async function callPriceAPI(formData) {
         volatility: formData.volatility
     };
     
-    // 如果是二叉树模型，添加步数参数
+    // Если биномиальная модель, добавить параметр количества шагов
     if (formData.model === 'binomial-tree' && formData.binomial_steps) {
         requestBody.binomial_steps = formData.binomial_steps;
     }
     
     try {
-        // 发送POST请求，设置5秒超时
+        // Отправка POST-запроса с тайм-аутом 5 секунд
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
@@ -107,7 +107,7 @@ async function callPriceAPI(formData) {
         
         clearTimeout(timeoutId);
         
-        // 解析JSON响应
+        // Парсинг JSON-ответа
         const data = await response.json();
         
         // Проверка HTTP статус-кода
@@ -135,14 +135,14 @@ async function callPriceAPI(formData) {
 }
 
 /**
- * 调用可视化数据生成API
- * @param {Object} formData 表单数据
- * @returns {Promise<Object>} API响应数据
+ * Вызов API генерации данных визуализации
+ * @param {Object} formData Данные формы
+ * @returns {Promise<Object>} Данные ответа API
  */
 async function callVisualizationAPI(formData) {
     const apiUrl = '/api/visualize';
     
-    // 构建请求体
+    // Построение тела запроса
     const requestBody = {
         model: formData.model,
         option_type: formData.option_type,
@@ -151,16 +151,16 @@ async function callVisualizationAPI(formData) {
         time_to_maturity: formData.time_to_maturity,
         risk_free_rate: formData.risk_free_rate,
         volatility: formData.volatility,
-        points: 50  // 默认生成50个数据点
+        points: 50  // По умолчанию генерируется 50 точек данных
     };
     
-    // 如果是二叉树模型，添加步数参数
+    // Если биномиальная модель, добавить параметр количества шагов
     if (formData.model === 'binomial-tree' && formData.binomial_steps) {
         requestBody.binomial_steps = formData.binomial_steps;
     }
     
     try {
-        // 发送POST请求，设置10秒超时（可视化计算可能需要更长时间）
+        // Отправка POST-запроса с тайм-аутом 10 секунд (визуализация может занять больше времени)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
@@ -175,7 +175,7 @@ async function callVisualizationAPI(formData) {
         
         clearTimeout(timeoutId);
         
-        // 解析JSON响应
+        // Парсинг JSON-ответа
         const data = await response.json();
         
         // Проверка HTTP статус-кода
@@ -203,39 +203,39 @@ async function callVisualizationAPI(formData) {
 }
 
 /**
- * 处理表单提交
+ * Обработка отправки формы
  */
 async function handleFormSubmit(event) {
     event.preventDefault();
     
-    // 清除之前的错误
+    // Очистка предыдущих ошибок
     hideErrors();
     
-    // 验证表单
+    // Проверка формы
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
         showErrors(validationErrors);
         return;
     }
     
-    // 收集表单数据
+    // Сбор данных формы
     const formData = collectFormData();
     
-    // 显示加载状态
+    // Отображение состояния загрузки
     setLoadingState(true);
     
     try {
-        // 调用价格计算API
+        // Вызов API расчета цены
         const priceResult = await callPriceAPI(formData);
         
-        // 检查是否成功
+        // Проверка успешности
         if (!priceResult.success) {
-            const errorMessages = priceResult.details || [priceResult.error || '计算失败'];
+            const errorMessages = priceResult.details || [priceResult.error || 'Ошибка расчета'];
             showErrors(errorMessages);
             return;
         }
         
-        // 显示结果
+        // Отображение результатов
         displayResults(priceResult);
         
         // Вызов API визуализации
@@ -258,24 +258,24 @@ async function handleFormSubmit(event) {
 }
 
 /**
- * 处理表单重置
+ * Обработка сброса формы
  */
 function handleFormReset() {
     optionForm.reset();
     hideErrors();
     hideResults();
     loadDefaultValues();
-    handleModelChange(); // 重置模型相关显示
+    handleModelChange(); // Сброс отображения, связанного с моделью
 }
 
 /**
- * 验证整个表单
- * @returns {Array} 错误消息数组
+ * Проверка всей формы
+ * @returns {Array} Массив сообщений об ошибках
  */
 function validateForm() {
     const errors = [];
     
-    // 获取表单值
+    // Получение значений формы
     const spotPrice = parseFloat(document.getElementById('spot_price').value);
     const strikePrice = parseFloat(document.getElementById('strike_price').value);
     const timeToMaturity = parseFloat(document.getElementById('time_to_maturity').value);
@@ -329,8 +329,8 @@ function validateForm() {
 }
 
 /**
- * 验证单个输入字段
- * @param {HTMLInputElement} input 输入元素
+ * Проверка отдельного поля ввода
+ * @param {HTMLInputElement} input Элемент ввода
  */
 function validateInput(input) {
     const value = parseFloat(input.value);
@@ -389,15 +389,15 @@ function validateInput(input) {
 }
 
 /**
- * 显示输入字段错误
- * @param {HTMLInputElement} input 输入元素
- * @param {string} message 错误消息
+ * Отображение ошибки поля ввода
+ * @param {HTMLInputElement} input Элемент ввода
+ * @param {string} message Сообщение об ошибке
  */
 function showInputError(input, message) {
-    // 移除已存在的错误消息
+    // Удаление существующего сообщения об ошибке
     clearInputError(input);
     
-    // 创建错误消息元素
+    // Создание элемента сообщения об ошибке
     const errorSpan = document.createElement('span');
     errorSpan.className = 'input-error';
     errorSpan.style.color = '#e74c3c';
@@ -406,13 +406,13 @@ function showInputError(input, message) {
     errorSpan.style.display = 'block';
     errorSpan.textContent = message;
     
-    // 插入错误消息
+    // Вставка сообщения об ошибке
     input.parentElement.appendChild(errorSpan);
 }
 
 /**
- * 清除输入字段错误
- * @param {HTMLInputElement} input 输入元素
+ * Очистка ошибки поля ввода
+ * @param {HTMLInputElement} input Элемент ввода
  */
 function clearInputError(input) {
     const errorSpan = input.parentElement.querySelector('.input-error');
@@ -422,8 +422,8 @@ function clearInputError(input) {
 }
 
 /**
- * 收集表单数据
- * @returns {Object} 表单数据对象
+ * Сбор данных формы
+ * @returns {Object} Объект данных формы
  */
 function collectFormData() {
     const formData = {
@@ -436,7 +436,7 @@ function collectFormData() {
         volatility: parseFloat(document.getElementById('volatility').value)
     };
     
-    // 如果是二叉树模型，添加步数参数
+    // Если биномиальная модель, добавить параметр количества шагов
     if (formData.model === 'binomial-tree') {
         formData.binomial_steps = parseInt(document.getElementById('binomial_steps').value);
     }
@@ -445,8 +445,8 @@ function collectFormData() {
 }
 
 /**
- * 显示错误消息
- * @param {Array} errors 错误消息数组
+ * Отображение сообщений об ошибках
+ * @param {Array} errors Массив сообщений об ошибках
  */
 function showErrors(errors) {
     errorList.innerHTML = '';
@@ -459,12 +459,12 @@ function showErrors(errors) {
     
     errorDisplay.style.display = 'block';
     
-    // 滚动到错误显示区域
+    // Прокрутка к области отображения ошибок
     errorDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 /**
- * 隐藏错误消息
+ * Скрытие сообщений об ошибках
  */
 function hideErrors() {
     errorDisplay.style.display = 'none';
@@ -472,14 +472,14 @@ function hideErrors() {
 }
 
 /**
- * 设置加载状态
- * @param {boolean} isLoading 是否正在加载
+ * Установка состояния загрузки
+ * @param {boolean} isLoading Идет ли загрузка
  */
 function setLoadingState(isLoading) {
     calculateBtn.disabled = isLoading;
     resetBtn.disabled = isLoading;
     
-    // 禁用所有输入字段
+    // Отключение всех полей ввода
     const inputs = optionForm.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.disabled = isLoading;
@@ -495,9 +495,9 @@ function setLoadingState(isLoading) {
 }
 
 /**
- * 格式化数字为四位小数
- * @param {number} value 数值
- * @returns {string} 格式化后的字符串
+ * Форматирование числа до четырех десятичных знаков
+ * @param {number} value Значение
+ * @returns {string} Отформатированная строка
  */
 function formatNumber(value) {
     if (typeof value !== 'number' || isNaN(value)) {
@@ -507,9 +507,9 @@ function formatNumber(value) {
 }
 
 /**
- * 生成模拟可视化数据（用于测试，实际数据将从API获取）
- * @param {Object} formData 表单数据
- * @returns {Object} 可视化数据对象
+ * Генерация тестовых данных визуализации (для тестирования, реальные данные будут получены из API)
+ * @param {Object} formData Данные формы
+ * @returns {Object} Объект данных визуализации
  */
 function generateMockVisualizationData(formData) {
     const spotPrice = formData.spot_price;
@@ -519,7 +519,7 @@ function generateMockVisualizationData(formData) {
     const riskFreeRate = formData.risk_free_rate;
     const isCall = formData.option_type === 'call';
     
-    // 生成标的资产价格范围（围绕当前价格的±40%）
+    // Генерация диапазона цен базового актива (±40% от текущей цены)
     const spotMin = spotPrice * 0.6;
     const spotMax = spotPrice * 1.4;
     const numPoints = 50;
@@ -533,12 +533,12 @@ function generateMockVisualizationData(formData) {
     const vegaY = [];
     const rhoY = [];
     
-    // 简化的Black-Scholes计算（用于生成模拟数据）
+    // Упрощенный расчет Блэка-Шоулза (для генерации тестовых данных)
     for (let i = 0; i < numPoints; i++) {
         const S = spotMin + i * spotStep;
         priceX.push(S);
         
-        // 简化的期权价格计算
+        // Упрощенный расчет цены опциона
         const moneyness = S / strikePrice;
         let optionPrice;
         
@@ -552,7 +552,7 @@ function generateMockVisualizationData(formData) {
         
         priceY.push(Math.max(0, optionPrice));
         
-        // 简化的希腊值计算
+        // Упрощенный расчет греков
         const d1 = (Math.log(S / strikePrice) + (riskFreeRate + 0.5 * volatility * volatility) * timeToMaturity) / 
                    (volatility * Math.sqrt(timeToMaturity));
         const normCdf = 0.5 * (1 + Math.tanh(d1 / Math.sqrt(2)));
@@ -566,18 +566,18 @@ function generateMockVisualizationData(formData) {
         const gamma = normPdf / (S * volatility * Math.sqrt(timeToMaturity));
         gammaY.push(gamma);
         
-        // Theta (简化)
+        // Theta (упрощенно)
         const theta = -(S * normPdf * volatility) / (2 * Math.sqrt(timeToMaturity)) - 
                       riskFreeRate * strikePrice * Math.exp(-riskFreeRate * timeToMaturity) * (isCall ? normCdf : (normCdf - 1));
-        thetaY.push(theta / 365); // 转换为每日
+        thetaY.push(theta / 365); // Преобразование в дневное значение
         
         // Vega
         const vega = S * normPdf * Math.sqrt(timeToMaturity);
-        vegaY.push(vega / 100); // 转换为1%波动率变化
+        vegaY.push(vega / 100); // Преобразование для изменения волатильности на 1%
         
         // Rho
         const rho = strikePrice * timeToMaturity * Math.exp(-riskFreeRate * timeToMaturity) * (isCall ? normCdf : (normCdf - 1));
-        rhoY.push(rho / 100); // 转换为1%利率变化
+        rhoY.push(rho / 100); // Преобразование для изменения ставки на 1%
     }
     
     return {
@@ -596,8 +596,8 @@ function generateMockVisualizationData(formData) {
 }
 
 /**
- * 显示计算结果
- * @param {Object} result 计算结果对象
+ * Отображение результатов расчета
+ * @param {Object} result Объект результатов расчета
  */
 function displayResults(result) {
     const resultsSection = document.getElementById('resultsSection');
@@ -683,16 +683,16 @@ function displayResults(result) {
         </div>
     `;
     
-    // 更新内容并显示结果区域
+    // Обновление содержимого и отображение области результатов
     resultsContent.innerHTML = html;
     resultsSection.style.display = 'block';
     
-    // 平滑滚动到结果区域
+    // Плавная прокрутка к области результатов
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**
- * 隐藏结果显示
+ * Скрытие отображения результатов
  */
 function hideResults() {
     const resultsSection = document.getElementById('resultsSection');
@@ -701,16 +701,16 @@ function hideResults() {
 }
 
 // ============================================================================
-// 可视化图表功能
+// Функции визуализации графиков
 // ============================================================================
 
-// 存储图表实例
+// Хранение экземпляров графиков
 let priceChartInstance = null;
 let greeksChartInstance = null;
 
 /**
- * 显示可视化图表
- * @param {Object} visualizationData 可视化数据对象
+ * Отображение графиков визуализации
+ * @param {Object} visualizationData Объект данных визуализации
  */
 function displayVisualization(visualizationData) {
     if (!visualizationData) {
@@ -719,31 +719,31 @@ function displayVisualization(visualizationData) {
     
     const visualizationSection = document.getElementById('visualizationSection');
     
-    // 显示可视化区域
+    // Отображение области визуализации
     visualizationSection.style.display = 'block';
     
-    // 渲染价格曲线图表
+    // Рендеринг графика кривой цены
     if (visualizationData.price_curve) {
         renderPriceChart(visualizationData.price_curve);
     }
     
-    // 渲染希腊值曲线图表
+    // Рендеринг графика кривых греков
     if (visualizationData.greeks_curves) {
         renderGreeksChart(visualizationData.greeks_curves);
     }
     
-    // 平滑滚动到可视化区域
+    // Плавная прокрутка к области визуализации
     visualizationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**
- * 隐藏可视化图表
+ * Скрытие графиков визуализации
  */
 function hideVisualization() {
     const visualizationSection = document.getElementById('visualizationSection');
     visualizationSection.style.display = 'none';
     
-    // 销毁现有图表实例
+    // Уничтожение существующих экземпляров графиков
     if (priceChartInstance) {
         priceChartInstance.destroy();
         priceChartInstance = null;
@@ -756,18 +756,18 @@ function hideVisualization() {
 }
 
 /**
- * 渲染价格曲线图表
- * @param {Object} priceData 价格曲线数据 {x: [], y: []}
+ * Рендеринг графика кривой цены
+ * @param {Object} priceData Данные кривой цены {x: [], y: []}
  */
 function renderPriceChart(priceData) {
     const ctx = document.getElementById('priceChart');
     
-    // 销毁现有图表
+    // Уничтожение существующего графика
     if (priceChartInstance) {
         priceChartInstance.destroy();
     }
     
-    // 创建新图表
+    // Создание нового графика
     priceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -827,7 +827,7 @@ function renderPriceChart(priceData) {
                 x: {
                     title: {
                         display: true,
-                        text: '标的资产价格 (S)',
+                        text: 'Цена базового актива (S)',
                         font: {
                             size: 14,
                             weight: '600'
@@ -887,18 +887,18 @@ function renderPriceChart(priceData) {
 }
 
 /**
- * 渲染希腊值曲线图表（多条曲线）
- * @param {Object} greeksData 希腊值数据 {delta: {x: [], y: []}, gamma: {x: [], y: []}, ...}
+ * Рендеринг графика кривых греков (несколько кривых)
+ * @param {Object} greeksData Данные греков {delta: {x: [], y: []}, gamma: {x: [], y: []}, ...}
  */
 function renderGreeksChart(greeksData) {
     const ctx = document.getElementById('greeksChart');
     
-    // 销毁现有图表
+    // Уничтожение существующего графика
     if (greeksChartInstance) {
         greeksChartInstance.destroy();
     }
     
-    // 定义希腊值的颜色和标签
+    // Определение цветов и меток греков
     const greeksConfig = {
         delta: { label: 'Delta (Δ)', color: '#667eea', borderWidth: 3 },
         gamma: { label: 'Gamma (Γ)', color: '#f093fb', borderWidth: 3 },
@@ -907,7 +907,7 @@ function renderGreeksChart(greeksData) {
         rho: { label: 'Rho (ρ)', color: '#fa709a', borderWidth: 3 }
     };
     
-    // 构建数据集
+    // Построение наборов данных
     const datasets = [];
     for (const [greekName, greekData] of Object.entries(greeksData)) {
         if (greeksConfig[greekName] && greekData && greekData.x && greekData.y) {
@@ -916,7 +916,7 @@ function renderGreeksChart(greeksData) {
                 label: config.label,
                 data: greekData.y,
                 borderColor: config.color,
-                backgroundColor: config.color + '20', // 添加透明度
+                backgroundColor: config.color + '20', // Добавление прозрачности
                 borderWidth: config.borderWidth,
                 fill: false,
                 tension: 0.4,
@@ -929,14 +929,14 @@ function renderGreeksChart(greeksData) {
         }
     }
     
-    // 使用第一个希腊值的x轴数据作为标签
+    // Использование данных оси x первого грека в качестве меток
     const xLabels = greeksData.delta ? greeksData.delta.x : 
                     greeksData.gamma ? greeksData.gamma.x :
                     greeksData.theta ? greeksData.theta.x :
                     greeksData.vega ? greeksData.vega.x :
                     greeksData.rho ? greeksData.rho.x : [];
     
-    // 创建新图表
+    // Создание нового графика
     greeksChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -1044,7 +1044,7 @@ function renderGreeksChart(greeksData) {
     });
 }
 
-// 导出函数供其他模块使用（如果需要）
+// Экспорт функций для использования другими модулями (если необходимо)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         validateForm,

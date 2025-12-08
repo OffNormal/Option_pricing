@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API通信测试 - OptionPricer</title>
+    <title>Тест API-коммуникации - OptionPricer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -75,35 +75,35 @@
     </style>
 </head>
 <body>
-    <h1>OptionPricer API通信测试</h1>
+    <h1>Тест API-коммуникации OptionPricer</h1>
     
     <div class="test-section">
-        <h2>测试 1: 价格计算API (Black-Scholes)</h2>
-        <button id="testPrice1" onclick="testPriceAPI1()">运行测试</button>
+        <h2>Тест 1: API расчета цены (Блэк-Шоулз)</h2>
+        <button id="testPrice1" onclick="testPriceAPI1()">Запустить тест</button>
         <div id="result1" class="result" style="display:none;"></div>
     </div>
     
     <div class="test-section">
-        <h2>测试 2: 价格计算API (二叉树模型)</h2>
-        <button id="testPrice2" onclick="testPriceAPI2()">运行测试</button>
+        <h2>Тест 2: API расчета цены (Биномиальная модель)</h2>
+        <button id="testPrice2" onclick="testPriceAPI2()">Запустить тест</button>
         <div id="result2" class="result" style="display:none;"></div>
     </div>
     
     <div class="test-section">
-        <h2>测试 3: 可视化数据API</h2>
-        <button id="testViz" onclick="testVisualizationAPI()">运行测试</button>
+        <h2>Тест 3: API данных визуализации</h2>
+        <button id="testViz" onclick="testVisualizationAPI()">Запустить тест</button>
         <div id="result3" class="result" style="display:none;"></div>
     </div>
     
     <div class="test-section">
-        <h2>测试 4: 错误处理 (无效输入)</h2>
-        <button id="testError" onclick="testErrorHandling()">运行测试</button>
+        <h2>Тест 4: Обработка ошибок (Недопустимый ввод)</h2>
+        <button id="testError" onclick="testErrorHandling()">Запустить тест</button>
         <div id="result4" class="result" style="display:none;"></div>
     </div>
     
     <div class="test-section">
-        <h2>测试 5: 网络超时</h2>
-        <button id="testTimeout" onclick="testTimeout()">运行测试</button>
+        <h2>Тест 5: Тайм-аут сети</h2>
+        <button id="testTimeout" onclick="testTimeout()">Запустить тест</button>
         <div id="result5" class="result" style="display:none;"></div>
     </div>
 
@@ -113,10 +113,10 @@
             const result = document.getElementById('result1');
             
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>测试中...';
+            btn.innerHTML = '<span class="loading"></span>Тестирование...';
             result.style.display = 'block';
             result.className = 'result';
-            result.textContent = '正在发送请求...';
+            result.textContent = 'Отправка запроса...';
             
             try {
                 const response = await fetch('/api/price', {
@@ -138,14 +138,14 @@
                 const data = await response.json();
                 
                 result.className = 'result ' + (response.ok ? 'success' : 'error');
-                result.textContent = '状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                result.textContent = 'Статус-код: ' + response.status + '\n\nДанные ответа:\n' + JSON.stringify(data, null, 2);
                 
             } catch (error) {
                 result.className = 'result error';
-                result.textContent = '错误: ' + error.message;
+                result.textContent = 'Ошибка: ' + error.message;
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '运行测试';
+                btn.innerHTML = 'Запустить тест';
             }
         }
         
@@ -154,10 +154,10 @@
             const result = document.getElementById('result2');
             
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>测试中...';
+            btn.innerHTML = '<span class="loading"></span>Тестирование...';
             result.style.display = 'block';
             result.className = 'result';
-            result.textContent = '正在发送请求...';
+            result.textContent = 'Отправка запроса...';
             
             try {
                 const response = await fetch('/api/price', {
@@ -180,14 +180,14 @@
                 const data = await response.json();
                 
                 result.className = 'result ' + (response.ok ? 'success' : 'error');
-                result.textContent = '状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                result.textContent = 'Статус-код: ' + response.status + '\n\nДанные ответа:\n' + JSON.stringify(data, null, 2);
                 
             } catch (error) {
                 result.className = 'result error';
-                result.textContent = '错误: ' + error.message;
+                result.textContent = 'Ошибка: ' + error.message;
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '运行测试';
+                btn.innerHTML = 'Запустить тест';
             }
         }
         
@@ -196,10 +196,10 @@
             const result = document.getElementById('result3');
             
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>测试中...';
+            btn.innerHTML = '<span class="loading"></span>Тестирование...';
             result.style.display = 'block';
             result.className = 'result';
-            result.textContent = '正在发送请求...';
+            result.textContent = 'Отправка запроса...';
             
             try {
                 const response = await fetch('/api/visualize', {
@@ -223,7 +223,7 @@
                 
                 result.className = 'result ' + (response.ok ? 'success' : 'error');
                 
-                // 简化显示（只显示数据点数量）
+                // Упрощенное отображение (показывает только количество точек данных)
                 if (data.visualization_data) {
                     const vizData = data.visualization_data;
                     const summary = {
@@ -233,17 +233,17 @@
                         price_curve_points: vizData.price_curve ? vizData.price_curve.x.length : 0,
                         greeks_curves: vizData.greeks_curves ? Object.keys(vizData.greeks_curves) : []
                     };
-                    result.textContent = '状态码: ' + response.status + '\n\n响应摘要:\n' + JSON.stringify(summary, null, 2);
+                    result.textContent = 'Статус-код: ' + response.status + '\n\nСводка ответа:\n' + JSON.stringify(summary, null, 2);
                 } else {
-                    result.textContent = '状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                    result.textContent = 'Статус-код: ' + response.status + '\n\nДанные ответа:\n' + JSON.stringify(data, null, 2);
                 }
                 
             } catch (error) {
                 result.className = 'result error';
-                result.textContent = '错误: ' + error.message;
+                result.textContent = 'Ошибка: ' + error.message;
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '运行测试';
+                btn.innerHTML = 'Запустить тест';
             }
         }
         
@@ -252,10 +252,10 @@
             const result = document.getElementById('result4');
             
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>测试中...';
+            btn.innerHTML = '<span class="loading"></span>Тестирование...';
             result.style.display = 'block';
             result.className = 'result';
-            result.textContent = '正在发送请求（包含无效数据）...';
+            result.textContent = 'Отправка запроса (с недопустимыми данными)...';
             
             try {
                 const response = await fetch('/api/price', {
@@ -266,25 +266,25 @@
                     body: JSON.stringify({
                         model: 'black-scholes',
                         option_type: 'call',
-                        spot_price: -100.0,  // 无效：负数
+                        spot_price: -100.0,  // Недопустимо: отрицательное число
                         strike_price: 105.0,
-                        time_to_maturity: -1.0,  // 无效：负数
+                        time_to_maturity: -1.0,  // Недопустимо: отрицательное число
                         risk_free_rate: 0.05,
-                        volatility: -0.2  // 无效：负数
+                        volatility: -0.2  // Недопустимо: отрицательное число
                     })
                 });
                 
                 const data = await response.json();
                 
                 result.className = 'result ' + (response.status === 400 ? 'success' : 'error');
-                result.textContent = '状态码: ' + response.status + ' (期望: 400)\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                result.textContent = 'Статус-код: ' + response.status + ' (ожидается: 400)\n\nДанные ответа:\n' + JSON.stringify(data, null, 2);
                 
             } catch (error) {
                 result.className = 'result error';
-                result.textContent = '错误: ' + error.message;
+                result.textContent = 'Ошибка: ' + error.message;
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '运行测试';
+                btn.innerHTML = 'Запустить тест';
             }
         }
         
@@ -293,10 +293,10 @@
             const result = document.getElementById('result5');
             
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>测试中...';
+            btn.innerHTML = '<span class="loading"></span>Тестирование...';
             result.style.display = 'block';
             result.className = 'result';
-            result.textContent = '正在测试超时处理（1秒超时）...';
+            result.textContent = 'Тестирование обработки тайм-аута (тайм-аут 1 секунда)...';
             
             try {
                 const controller = new AbortController();
@@ -315,7 +315,7 @@
                         time_to_maturity: 1.0,
                         risk_free_rate: 0.05,
                         volatility: 0.2,
-                        binomial_steps: 1000  // 大步数可能导致较长计算时间
+                        binomial_steps: 1000  // Большое количество шагов может привести к длительному расчету
                     }),
                     signal: controller.signal
                 });
@@ -324,19 +324,19 @@
                 const data = await response.json();
                 
                 result.className = 'result success';
-                result.textContent = '请求在超时前完成\n状态码: ' + response.status + '\n\n响应数据:\n' + JSON.stringify(data, null, 2);
+                result.textContent = 'Запрос завершен до тайм-аута\nСтатус-код: ' + response.status + '\n\nДанные ответа:\n' + JSON.stringify(data, null, 2);
                 
             } catch (error) {
                 if (error.name === 'AbortError') {
                     result.className = 'result success';
-                    result.textContent = '✓ 超时处理正常工作\n错误类型: ' + error.name + '\n错误消息: 请求已中止';
+                    result.textContent = '✓ Обработка тайм-аута работает нормально\nТип ошибки: ' + error.name + '\nСообщение об ошибке: Запрос прерван';
                 } else {
                     result.className = 'result error';
-                    result.textContent = '错误: ' + error.message;
+                    result.textContent = 'Ошибка: ' + error.message;
                 }
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '运行测试';
+                btn.innerHTML = 'Запустить тест';
             }
         }
     </script>

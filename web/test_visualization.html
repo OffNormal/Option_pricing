@@ -1,31 +1,31 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chart.js 可视化测试</title>
+    <title>Тест визуализации Chart.js</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Chart.js 可视化测试</h1>
-            <p class="subtitle">测试价格曲线和希腊值图表</p>
+            <h1>Тест визуализации Chart.js</h1>
+            <p class="subtitle">Тестирование графиков кривой цены и греков</p>
         </header>
 
         <main>
             <section class="visualization-section">
-                <h2>可视化图表</h2>
+                <h2>Графики визуализации</h2>
                 <div id="visualizationContent">
                     <div class="charts-grid">
                         <div class="chart-container">
-                            <h3>期权价格曲线</h3>
+                            <h3>Кривая цены опциона</h3>
                             <canvas id="priceChart"></canvas>
                         </div>
                         
                         <div class="chart-container">
-                            <h3>希腊值曲线</h3>
+                            <h3>Кривые греков</h3>
                             <canvas id="greeksChart"></canvas>
                         </div>
                     </div>
@@ -35,7 +35,7 @@
     </div>
 
     <script>
-        // 测试数据
+        // Тестовые данные
         const testData = {
             price_curve: {
                 x: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140],
@@ -65,7 +65,7 @@
             }
         };
 
-        // 渲染价格曲线
+        // Рендеринг графика кривой цены
         function renderPriceChart(priceData) {
             const ctx = document.getElementById('priceChart');
             new Chart(ctx, {
@@ -73,7 +73,7 @@
                 data: {
                     labels: priceData.x,
                     datasets: [{
-                        label: '期权价格',
+                        label: 'Цена опциона',
                         data: priceData.y,
                         borderColor: '#667eea',
                         backgroundColor: 'rgba(102, 126, 234, 0.1)',
@@ -106,7 +106,7 @@
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             callbacks: {
                                 label: function(context) {
-                                    return '期权价格: ' + context.parsed.y.toFixed(4);
+                                    return 'Цена опциона: ' + context.parsed.y.toFixed(4);
                                 }
                             }
                         }
@@ -115,7 +115,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: '标的资产价格 (S)',
+                                text: 'Цена базового актива (S)',
                                 font: { size: 14, weight: '600' },
                                 color: '#444'
                             },
@@ -124,7 +124,7 @@
                         y: {
                             title: {
                                 display: true,
-                                text: '期权价格',
+                                text: 'Цена опциона',
                                 font: { size: 14, weight: '600' },
                                 color: '#444'
                             },
@@ -135,7 +135,7 @@
             });
         }
 
-        // 渲染希腊值曲线
+        // Рендеринг графика кривых греков
         function renderGreeksChart(greeksData) {
             const ctx = document.getElementById('greeksChart');
             const greeksConfig = {
@@ -198,7 +198,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: '标的资产价格 (S)',
+                                text: 'Цена базового актива (S)',
                                 font: { size: 14, weight: '600' },
                                 color: '#444'
                             },
@@ -207,7 +207,7 @@
                         y: {
                             title: {
                                 display: true,
-                                text: '希腊值',
+                                text: 'Значения греков',
                                 font: { size: 14, weight: '600' },
                                 color: '#444'
                             },
@@ -218,7 +218,7 @@
             });
         }
 
-        // 页面加载后渲染图表
+        // Рендеринг графиков после загрузки страницы
         window.addEventListener('DOMContentLoaded', () => {
             renderPriceChart(testData.price_curve);
             renderGreeksChart(testData.greeks_curves);

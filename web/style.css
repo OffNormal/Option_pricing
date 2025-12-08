@@ -1,4 +1,4 @@
-/* 全局样式 */
+/* Глобальные стили */
 * {
     margin: 0;
     padding: 0;
@@ -23,7 +23,7 @@ body {
     overflow: hidden;
 }
 
-/* 头部样式 */
+/* Стили заголовка */
 header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -42,7 +42,7 @@ header .subtitle {
     opacity: 0.9;
 }
 
-/* 主内容区域 */
+/* Основная область контента */
 main {
     padding: 40px 30px;
 }
@@ -59,7 +59,7 @@ section h2 {
     border-bottom: 3px solid #667eea;
 }
 
-/* 表单样式 */
+/* Стили формы */
 .form-group {
     margin-bottom: 25px;
 }
@@ -102,7 +102,7 @@ section h2 {
     font-style: italic;
 }
 
-/* 错误显示 */
+/* Отображение ошибок */
 .error-display {
     background: #fee;
     border: 2px solid #e74c3c;
@@ -126,7 +126,7 @@ section h2 {
     margin-bottom: 5px;
 }
 
-/* 按钮样式 */
+/* Стили кнопок */
 .form-actions {
     display: flex;
     gap: 15px;
@@ -174,7 +174,7 @@ section h2 {
     background: #f8f9ff;
 }
 
-/* 结果和可视化区域 */
+/* Область результатов и визуализации */
 .results-section,
 .visualization-section {
     background: #f8f9ff;
@@ -183,7 +183,7 @@ section h2 {
     border: 2px solid #e0e0e0;
 }
 
-/* 结果显示样式 */
+/* Стили отображения результатов */
 .results-header {
     display: flex;
     justify-content: space-between;
@@ -286,7 +286,7 @@ section h2 {
     margin-bottom: 10px;
 }
 
-/* 页脚样式 */
+/* Стили подвала */
 footer {
     background: #f5f5f5;
     padding: 20px 30px;
@@ -296,7 +296,7 @@ footer {
     border-top: 1px solid #e0e0e0;
 }
 
-/* 加载动画 */
+/* Анимация загрузки */
 .loading {
     display: inline-block;
     width: 20px;
@@ -313,14 +313,14 @@ footer {
     to { transform: rotate(360deg); }
 }
 
-/* 输入字段无效状态 */
+/* Недопустимое состояние поля ввода */
 .form-group input.invalid,
 .form-group select.invalid {
     border-color: #e74c3c;
     background-color: #fee;
 }
 
-/* 禁用状态 */
+/* Отключенное состояние */
 input:disabled,
 select:disabled {
     background-color: #f5f5f5;
@@ -328,7 +328,7 @@ select:disabled {
     opacity: 0.6;
 }
 
-/* 可视化图表样式 */
+/* Стили графиков визуализации */
 .charts-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -354,7 +354,7 @@ select:disabled {
     max-height: 400px;
 }
 
-/* 响应式设计 */
+/* Адаптивный дизайн */
 @media (max-width: 768px) {
     body {
         padding: 10px;

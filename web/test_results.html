@@ -1,43 +1,43 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Results Display Test - OptionPricer</title>
+    <title>Тест отображения результатов - OptionPricer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Results Display Test</h1>
-            <p class="subtitle">测试结果显示功能</p>
+            <h1>Тест отображения результатов</h1>
+            <p class="subtitle">Тестирование функции отображения результатов</p>
         </header>
 
         <main>
             <section class="input-section">
-                <h2>测试控制</h2>
+                <h2>Управление тестами</h2>
                 <button onclick="testBlackScholesResults()" class="btn btn-primary">
-                    测试 Black-Scholes 结果
+                    Тест результатов Блэка-Шоулза
                 </button>
                 <button onclick="testBinomialResults()" class="btn btn-primary" style="margin-top: 10px;">
-                    测试二叉树结果
+                    Тест результатов биномиального дерева
                 </button>
                 <button onclick="testWithoutGreeks()" class="btn btn-secondary" style="margin-top: 10px;">
-                    测试无希腊值结果
+                    Тест результатов без греков
                 </button>
             </section>
 
             <section class="results-section" id="resultsSection" style="display: none;">
-                <h2>计算结果</h2>
+                <h2>Результаты расчета</h2>
                 <div id="resultsContent">
-                    <!-- 结果将通过 JavaScript 动态插入 -->
+                    <!-- Результаты будут вставлены динамически через JavaScript -->
                 </div>
             </section>
         </main>
     </div>
 
     <script>
-        // 格式化数字为四位小数
+        // Форматирование числа до четырех десятичных знаков
         function formatNumber(value) {
             if (typeof value !== 'number' || isNaN(value)) {
                 return 'N/A';
@@ -45,7 +45,7 @@
             return value.toFixed(4);
         }
 
-        // 显示计算结果
+        // Отображение результатов расчета
         function displayResults(result) {
             const resultsSection = document.getElementById('resultsSection');
             const resultsContent = document.getElementById('resultsContent');
@@ -53,30 +53,30 @@
             const html = `
                 <div class="results-header">
                     <div class="model-info">
-                        模型: ${result.model || 'Unknown'}
+                        Модель: ${result.model || 'Unknown'}
                     </div>
                     <div class="computation-time">
-                        计算时间: ${result.computation_time_ms || 0} ms
+                        Время расчета: ${result.computation_time_ms || 0} мс
                     </div>
                 </div>
                 
                 <div class="results-grid">
                     <div class="result-card">
-                        <h3>期权价格</h3>
+                        <h3>Цена опциона</h3>
                         <div class="price-highlight">
-                            <span class="price-label">期权价值</span>
+                            <span class="price-label">Стоимость опциона</span>
                             ${formatNumber(result.option_price)}
                         </div>
                         <table class="result-table">
                             <thead>
                                 <tr>
-                                    <th>参数</th>
-                                    <th>数值</th>
+                                    <th>Параметр</th>
+                                    <th>Значение</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>期权价格</td>
+                                    <td>Цена опциона</td>
                                     <td class="result-value">${formatNumber(result.option_price)}</td>
                                 </tr>
                             </tbody>
@@ -85,40 +85,40 @@
                     
                     ${result.greeks ? `
                     <div class="result-card">
-                        <h3>希腊值 (Greeks)</h3>
+                        <h3>Греки (Greeks)</h3>
                         <table class="result-table">
                             <thead>
                                 <tr>
-                                    <th>希腊值</th>
-                                    <th>数值</th>
-                                    <th>说明</th>
+                                    <th>Грек</th>
+                                    <th>Значение</th>
+                                    <th>Описание</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>Delta (Δ)</td>
                                     <td class="result-value">${formatNumber(result.greeks.delta)}</td>
-                                    <td>价格变化敏感度</td>
+                                    <td>Чувствительность к цене</td>
                                 </tr>
                                 <tr>
                                     <td>Gamma (Γ)</td>
                                     <td class="result-value">${formatNumber(result.greeks.gamma)}</td>
-                                    <td>Delta变化率</td>
+                                    <td>Скорость изменения Delta</td>
                                 </tr>
                                 <tr>
                                     <td>Theta (Θ)</td>
                                     <td class="result-value">${formatNumber(result.greeks.theta)}</td>
-                                    <td>时间衰减</td>
+                                    <td>Временной распад</td>
                                 </tr>
                                 <tr>
                                     <td>Vega (ν)</td>
                                     <td class="result-value">${formatNumber(result.greeks.vega)}</td>
-                                    <td>波动率敏感度</td>
+                                    <td>Чувствительность к волатильности</td>
                                 </tr>
                                 <tr>
                                     <td>Rho (ρ)</td>
                                     <td class="result-value">${formatNumber(result.greeks.rho)}</td>
-                                    <td>利率敏感度</td>
+                                    <td>Чувствительность к ставке</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -132,7 +132,7 @@
             resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // 测试 Black-Scholes 结果
+        // Тест результатов Блэка-Шоулза
         function testBlackScholesResults() {
             const result = {
                 success: true,
@@ -150,11 +150,11 @@
             displayResults(result);
         }
 
-        // 测试二叉树结果
+        // Тест результатов биномиального дерева
         function testBinomialResults() {
             const result = {
                 success: true,
-                model: 'Binomial Tree (100 steps)',
+                model: 'Биномиальное дерево (100 шагов)',
                 option_price: 8.9245,
                 greeks: {
                     delta: 0.5601,
@@ -168,7 +168,7 @@
             displayResults(result);
         }
 
-        // 测试无希腊值结果
+        // Тест результатов без греков
         function testWithoutGreeks() {
             const result = {
                 success: true,
