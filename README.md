@@ -8,7 +8,7 @@
 [![CMake](https://img.shields.io/badge/CMake-3.15+-green.svg)](https://cmake.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Авторы:** Сюй Хаосэнь, Чжу Дунлян, Чэнь Цзюньань
+###**Авторы:** Сюй Хаосэнь, Чжу Дунлян, Чэнь Цзюньань
 
 </div>
 
