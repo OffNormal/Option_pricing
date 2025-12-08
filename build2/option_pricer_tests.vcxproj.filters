@@ -7,7 +7,13 @@
     <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\tests\test_math_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\tests\test_black_scholes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\src\math_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\src\black_scholes_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

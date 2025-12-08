@@ -70,6 +70,16 @@ private:
      * @return 看跌期权价格
      */
     double calculate_put_price(const OptionParams& params, double d1, double d2) const;
+    
+    /**
+     * 计算希腊值（使用解析公式）
+     * 
+     * @param params 期权参数
+     * @param d1 已计算的d1值
+     * @param d2 已计算的d2值
+     * @return Greeks结构，包含所有五个希腊值
+     */
+    Greeks calculate_greeks(const OptionParams& params, double d1, double d2) const;
 };
 
 } // namespace option_pricer

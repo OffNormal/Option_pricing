@@ -55,6 +55,12 @@ set(OPTION_PRICER_SOURCES
     src/main.cpp
     src/math_utils.cpp
     src/black_scholes_engine.cpp
+    src/binomial_tree_engine.cpp
+    src/input_validator.cpp
+    src/error_logger.cpp
+    src/parameter_validator.cpp
+    src/visualization_generator.cpp
+    src/json_serialization.cpp
 )
 
 # 主可执行文件
@@ -77,6 +83,12 @@ if(GTest_FOUND)
     set(SHARED_SOURCES
         src/math_utils.cpp
         src/black_scholes_engine.cpp
+        src/binomial_tree_engine.cpp
+        src/input_validator.cpp
+        src/error_logger.cpp
+        src/parameter_validator.cpp
+        src/visualization_generator.cpp
+        src/json_serialization.cpp
     )
     
     # 测试源文件（将在后续任务中添加）
@@ -84,10 +96,15 @@ if(GTest_FOUND)
         tests/test_core_structures.cpp
         tests/test_math_utils.cpp
         tests/test_black_scholes.cpp
-        # tests/test_binomial_tree.cpp
+        tests/test_greeks_basic.cpp
+        tests/test_binomial_tree.cpp
+        tests/test_binomial_greeks.cpp
+        tests/test_input_validator.cpp
+        tests/test_error_handling.cpp
+        tests/test_visualization_generator.cpp
+        tests/test_json_serialization.cpp
         # tests/test_properties_pricing.cpp
         # tests/test_properties_greeks.cpp
-        # tests/test_input_validator.cpp
     )
     
     if(TEST_SOURCES)

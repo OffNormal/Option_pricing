@@ -370,7 +370,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\tests\test_core_structures.cpp" />
     <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\tests\test_math_utils.cpp" />
+    <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\tests\test_black_scholes.cpp" />
     <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\src\math_utils.cpp" />
+    <ClCompile Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\src\black_scholes_engine.cpp" />
     <Natvis Include="C:\Users\xhs20\Desktop\code\c++\Option_pricing\build2\_deps\nlohmann_json-src\nlohmann_json.natvis">
     </Natvis>
   </ItemGroup>
