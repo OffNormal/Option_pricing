@@ -646,11 +646,6 @@ TEST_F(BlackScholesEngineTest, PutCallParity) {
 
 Этот проект лицензирован по лицензии MIT - см. файл [LICENSE](LICENSE)
 
-## Контакты
-
-- Домашняя страница проекта: https://github.com/yourusername/option-pricer
-- Сообщения об ошибках: https://github.com/yourusername/option-pricer/issues
-- Email: your.email@example.com
 
 ## Благодарности
 
